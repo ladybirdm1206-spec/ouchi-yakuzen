@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#f6f0e3"/>
+  <g transform="translate(256 256) scale(1.12) translate(-256 -292)">
+  <!-- ふた -->
+  <ellipse cx="256" cy="186" rx="26" ry="16" fill="#7a4d30"/>
+  <path d="M110 262c0-58 66-86 146-86s146 28 146 86z" fill="#a0673a"/>
+  <!-- 取っ手 -->
+  <rect x="62" y="270" width="56" height="34" rx="17" fill="#7a4d30"/>
+  <rect x="394" y="270" width="56" height="34" rx="17" fill="#7a4d30"/>
+  <!-- 鍋 -->
+  <path d="M92 258h328c0 92-62 156-164 156S92 350 92 258z" fill="#8a5a3b"/>
+  <rect x="86" y="250" width="340" height="22" rx="11" fill="#6b4329"/>
+  <!-- 五色 -->
+  <circle cx="160" cy="330" r="22" fill="#5f8a4c"/>
+  <circle cx="208" cy="330" r="22" fill="#c2543c"/>
+  <circle cx="256" cy="330" r="22" fill="#d39b22"/>
+  <circle cx="304" cy="330" r="22" fill="#f3ecdc"/>
+  <circle cx="352" cy="330" r="22" fill="#2a231e" stroke="#f3ecdc" stroke-width="3"/>
+  </g>
+</svg>

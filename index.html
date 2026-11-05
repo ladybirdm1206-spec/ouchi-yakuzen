@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>おうち薬膳・野菜アドバイザー</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="冷蔵庫の食材や体の調子から、薬膳の五色の考え方で今日のおうちごはんのヒントが見つかります。">
+<meta name="theme-color" content="#f6f0e3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="おうち薬膳">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+<style>
+/* Layout: 生成りの紙に、五色の帯。上部にタブ、下にカードが重なる「台所のメモ帳」 */
+:root {
+  --bg: #f6f0e3;
+  --paper: #fffaf0;
+  --paper-2: #f1e8d5;
+  --ink: #3d342b;
+  --ink-soft: #6f6253;
+  --line: #e2d6bf;
+  --accent: #a0673a;
+  --accent-ink: #fffaf0;
+  --c-green: #5f8a4c;
+  --c-red: #c2543c;
+  --c-yellow: #d39b22;
+  --c-white: #ece4d1;
+  --c-white-edge: #c9bb9e;
+  --c-black: #3b322c;
+  --warm: #c9663e;
+  --cool: #4f86a6;
+  --neutral: #8f9a6a;
+  --shadow: 0 2px 0 rgba(120, 90, 50, .08), 0 8px 24px rgba(120, 90, 50, .08);
+  --f-display: "Klee One", "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+  --f-body: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  --r-lg: 22px;
+  --r-md: 14px;
+  --r-pill: 999px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #221d18; --paper: #2d2620; --paper-2: #383028; --ink: #f1e7d6; --ink-soft: #c2b29c;
+    --line: #4a3f34; --accent: #e0a06b; --accent-ink: #261f19;
+    --c-green: #86b46f; --c-red: #e2775e; --c-yellow: #e8b84a; --c-white: #e9e0cc; --c-white-edge: #a99a7e; --c-black: #15110e;
+    --warm: #e88a5f; --cool: #7fb0cf; --neutral: #b2bb89;
+    --shadow: 0 2px 0 rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #221d18; --paper: #2d2620; --paper-2: #383028; --ink: #f1e7d6; --ink-soft: #c2b29c;
+  --line: #4a3f34; --accent: #e0a06b; --accent-ink: #261f19;
+  --c-green: #86b46f; --c-red: #e2775e; --c-yellow: #e8b84a; --c-white: #e9e0cc; --c-white-edge: #a99a7e; --c-black: #15110e;
+  --warm: #e88a5f; --cool: #7fb0cf; --neutral: #b2bb89;
+  --shadow: 0 2px 0 rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 15px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg);
+}
+.wrap {
+  max-width: 960px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- header ---------- */
+.hero { padding-block: 28px 8px; }
+.brand { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.brand-icon { width: 56px; height: 56px; border-radius: 14px; box-shadow: var(--shadow); flex: none; }
+.gosiki { display: flex; height: 8px; border-radius: var(--r-pill); overflow: hidden; flex: 0 1 160px; }
+.gosiki span { flex: 1; }
+.hero h1 {
+  font-family: var(--f-display); font-weight: 600; font-size: clamp(1.6rem, 4.6vw, 2.3rem);
+  line-height: 1.35; margin: 0 0 6px; text-wrap: balance; letter-spacing: .02em; word-break: keep-all;
+}
+.hero p { margin: 0; color: var(--ink-soft); max-width: 38em; }
+
+/* ---------- tabs ---------- */
+.tabs-bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--bg); padding-block: 14px 12px;
+}
+.tabs {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+  background: var(--paper-2); padding: 6px; border-radius: var(--r-pill);
+}
+.tab {
+  border: 0; background: transparent; border-radius: var(--r-pill);
+  padding: 10px 6px; font-weight: 700; font-size: .95rem; color: var(--ink-soft);
+  min-height: 46px; line-height: 1.3; transition: background .2s, color .2s;
+}
+.tab small { display: block; font-weight: 500; font-size: .7rem; letter-spacing: .04em; }
+.tab[aria-selected="true"] { background: var(--paper); color: var(--ink); box-shadow: var(--shadow); }
+
+main { padding-block: 8px 48px; }
+.panel { display: grid; gap: 18px; }
+.lead { margin: 0; color: var(--ink-soft); }
+
+/* ---------- cards ---------- */
+.card {
+  background: var(--paper); border-radius: var(--r-lg); padding: 20px; box-shadow: var(--shadow);
+  min-width: 0;
+}
+.card h2, .card h3 {
+  word-break: auto-phrase;
+  font-family: var(--f-display); font-weight: 600; margin: 0 0 10px; line-height: 1.4; text-wrap: balance;
+}
+.card h2 { font-size: 1.25rem; }
+.card h3 { font-size: 1.1rem; }
+.label {
+  display: inline-block; font-size: .72rem; font-weight: 700; letter-spacing: .12em;
+  color: var(--accent); margin-bottom: 4px;
+}
+
+/* ---------- search & chips ---------- */
+.search { display: flex; gap: 8px; flex-wrap: wrap; }
+.search input {
+  flex: 1 1 220px; min-width: 0; font: inherit; color: var(--ink);
+  background: var(--paper); border: 2px solid var(--line); border-radius: var(--r-pill);
+  padding: 10px 18px; min-height: 48px;
+}
+.search input:focus { border-color: var(--accent); outline: none; }
+.btn {
+  border: 0; border-radius: var(--r-pill); padding: 10px 20px; min-height: 48px; font-weight: 700;
+  background: var(--accent); color: var(--accent-ink);
+}
+.btn.ghost { background: transparent; color: var(--ink-soft); border: 2px solid var(--line); }
+
+.groups { display: grid; gap: 14px; }
+.group h4 {
+  margin: 0 0 8px; font-size: .85rem; font-weight: 700; color: var(--ink-soft);
+  display: flex; align-items: center; gap: 8px;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 2px solid var(--line); background: var(--paper); border-radius: var(--r-pill);
+  padding: 7px 14px 7px 10px; min-height: 42px; font-size: .95rem; font-weight: 500;
+  transition: transform .12s, border-color .2s, background .2s;
+}
+.chip:hover { border-color: var(--accent); }
+.chip:active { transform: scale(.97); }
+.chip[aria-pressed="true"] { background: var(--paper-2); border-color: var(--ink); font-weight: 700; }
+.chip[aria-pressed="true"]::after { content: "✓"; font-size: .85rem; color: var(--accent); }
+.dot {
+  width: 14px; height: 14px; border-radius: 50%; flex: none; display: inline-block;
+  border: 1.5px solid transparent;
+}
+.dot.green { background: var(--c-green); }
+.dot.red { background: var(--c-red); }
+.dot.yellow { background: var(--c-yellow); }
+.dot.white { background: var(--c-white); border-color: var(--c-white-edge); }
+.dot.black { background: var(--c-black); border-color: var(--c-black); }
+.dot.none { background: transparent; border: 1.5px dashed var(--ink-soft); }
+
+.selected-bar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+  background: var(--paper-2); border-radius: var(--r-md); padding: 12px 14px;
+}
+.selected-bar strong { font-size: .9rem; }
+.selected-bar .names { flex: 1 1 200px; min-width: 0; }
+.sample-note { font-size: .8rem; color: var(--ink-soft); width: 100%; margin: 0; }
+.empty { color: var(--ink-soft); text-align: center; padding: 24px 12px; }
+
+/* ---------- results ---------- */
+.results { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+.results .wide { grid-column: 1 / -1; }
+.palette-row { display: flex; gap: 10px; margin: 6px 0 12px; flex-wrap: wrap; }
+.pal { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: .75rem; color: var(--ink-soft); width: 48px; }
+.pal .big { width: 36px; height: 36px; border-radius: 50%; border: 2px dashed var(--line); background: transparent; }
+.pal.on .big { border-style: solid; }
+.pal.on.green .big { background: var(--c-green); border-color: var(--c-green); }
+.pal.on.red .big { background: var(--c-red); border-color: var(--c-red); }
+.pal.on.yellow .big { background: var(--c-yellow); border-color: var(--c-yellow); }
+.pal.on.white .big { background: var(--c-white); border-color: var(--c-white-edge); }
+.pal.on.black .big { background: var(--c-black); border-color: var(--c-black); }
+.pal.on { color: var(--ink); font-weight: 700; }
+
+.meter { margin-top: 6px; }
+.meter-track {
+  position: relative; height: 12px; border-radius: var(--r-pill);
+  background: linear-gradient(90deg, var(--cool), var(--neutral), var(--warm));
+}
+.meter-pin {
+  position: absolute; top: 50%; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--paper); border: 3px solid var(--ink); transform: translate(-50%, -50%);
+  transition: left .4s ease;
+}
+.meter-scale { display: flex; justify-content: space-between; font-size: .75rem; color: var(--ink-soft); margin-top: 6px; }
+
+.food-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.food-list li { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; align-items: start; }
+.food-list .dot { margin-top: 6px; }
+.food-list b { font-weight: 700; }
+.food-list p { margin: 0; grid-column: 2; color: var(--ink-soft); font-size: .92rem; }
+
+.tag {
+  display: inline-block; font-size: .72rem; font-weight: 700; border-radius: var(--r-pill);
+  padding: 1px 9px; margin-left: 6px; vertical-align: 2px; border: 1.5px solid currentColor;
+}
+.tag.warm { color: var(--warm); }
+.tag.cool { color: var(--cool); }
+.tag.neutral { color: var(--neutral); }
+
+.menu { display: grid; gap: 12px; }
+.menu-item { border: 2px solid var(--line); border-radius: var(--r-md); padding: 14px 16px; }
+.menu-item h4 { margin: 0 0 4px; font-family: var(--f-display); font-size: 1.08rem; font-weight: 600; }
+.menu-item p { margin: 0; font-size: .93rem; }
+.menu-item .uses { font-size: .78rem; color: var(--ink-soft); margin-top: 6px; }
+
+.tips { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.tips li {
+  background: var(--paper-2); border-radius: var(--r-md); padding: 10px 14px;
+  display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start;
+}
+.tips .dot { margin-top: 6px; }
+
+/* ---------- body condition ---------- */
+.conds { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.cond {
+  border: 2px solid var(--line); background: var(--paper); border-radius: var(--r-md);
+  padding: 14px 12px; text-align: left; display: grid; gap: 6px; min-height: 92px;
+  transition: border-color .2s, background .2s, transform .12s;
+}
+.cond:hover { border-color: var(--accent); }
+.cond:active { transform: scale(.98); }
+.cond[aria-pressed="true"] { border-color: var(--ink); background: var(--paper-2); }
+.cond .t { font-weight: 700; line-height: 1.4; }
+.cond .dots { display: flex; gap: 4px; }
+
+.veg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.veg-card {
+  border: 2px solid var(--line); border-radius: var(--r-md); padding: 12px 14px; background: var(--paper);
+  text-align: left; display: grid; gap: 4px; min-width: 0;
+}
+button.veg-card:hover { border-color: var(--accent); }
+.veg-card .name { font-weight: 700; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.veg-card .name .tag { margin-left: 0; }
+.veg-card p { margin: 0; font-size: .88rem; color: var(--ink-soft); }
+.veg-card .go { font-size: .76rem; color: var(--accent); font-weight: 700; }
+
+.steps { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; }
+.steps li::marker { color: var(--accent); font-weight: 700; }
+
+/* ---------- five color dictionary ---------- */
+.color-btns { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.color-btn {
+  border: 2px solid var(--line); background: var(--paper); border-radius: var(--r-md);
+  padding: 12px 4px 10px; display: grid; justify-items: center; gap: 6px; font-weight: 700;
+  transition: border-color .2s, transform .12s;
+}
+.color-btn .swatch { width: 38px; height: 38px; border-radius: 50%; border: 2px solid transparent; }
+.color-btn small { font-weight: 500; font-size: .72rem; color: var(--ink-soft); }
+.color-btn[aria-pressed="true"] { border-color: var(--ink); background: var(--paper-2); }
+.color-btn:active { transform: scale(.97); }
+
+.organ-head { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; }
+.organ-mark {
+  width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center;
+  font-family: var(--f-display); font-size: 1.9rem; font-weight: 600; color: var(--paper);
+}
+.organ-mark.white { color: var(--ink); border: 2px solid var(--c-white-edge); }
+.organ-head h2 { margin: 0; }
+.organ-head p { margin: 2px 0 0; color: var(--ink-soft); font-size: .92rem; }
+.effects { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
+.effects li { background: var(--paper-2); border-radius: var(--r-pill); padding: 4px 14px; font-size: .9rem; }
+
+.bg-green { background: var(--c-green); }
+.bg-red { background: var(--c-red); }
+.bg-yellow { background: var(--c-yellow); }
+.bg-white { background: var(--c-white); }
+.bg-black { background: var(--c-black); }
+
+.nature-guide { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.nature-guide div { border-radius: var(--r-md); background: var(--paper-2); padding: 12px 14px; min-width: 0; }
+.nature-guide b { display: block; margin-bottom: 2px; }
+.nature-guide p { margin: 0; font-size: .86rem; color: var(--ink-soft); }
+
+footer { padding-block: 8px 32px; color: var(--ink-soft); font-size: .8rem; }
+
+.fade-in { animation: fadein .35s ease both; }
+@keyframes fadein { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+@media (max-width: 680px) {
+  .results { grid-template-columns: 1fr; }
+  .nature-guide { grid-template-columns: 1fr; }
+  .card { padding: 16px; }
+}
+@media (max-width: 420px) {
+  .tab { font-size: .85rem; }
+  .color-btn { padding: 10px 2px 8px; font-size: .9rem; }
+  .color-btn .swatch { width: 30px; height: 30px; }
+  .organ-mark { width: 58px; height: 58px; font-size: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="wrap hero">
+  <div class="brand">
+    <img class="brand-icon" src="icons/icon.svg" alt="" width="56" height="56">
+    <div class="gosiki" aria-hidden="true">
+      <span class="bg-green"></span><span class="bg-red"></span><span class="bg-yellow"></span><span class="bg-white"></span><span class="bg-black"></span>
+    </div>
+  </div>
+  <h1>おうち薬膳・<wbr>野菜アドバイザー</h1>
+  <p>冷蔵庫の食材や今日の体の調子から、薬膳の「五色」と「あたためる・冷ます」の考え方で、今夜のごはんのヒントをお届けしますよ。</p>
+</header>
+
+<div class="tabs-bar">
+  <div class="wrap">
+    <div class="tabs" role="tablist" aria-label="探し方">
+      <button class="tab" role="tab" id="tab-food" aria-controls="panel-food" aria-selected="true">食材から<small>冷蔵庫をチェック</small></button>
+      <button class="tab" role="tab" id="tab-body" aria-controls="panel-body" aria-selected="false">体の調子から<small>今日の気分で</small></button>
+      <button class="tab" role="tab" id="tab-color" aria-controls="panel-color" aria-selected="false">五色パレット<small>野菜図鑑</small></button>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <!-- 食材から探す -->
+  <section class="panel" id="panel-food" role="tabpanel" aria-labelledby="tab-food">
+    <div class="card">
+      <span class="label">STEP 1</span>
+      <h2>冷蔵庫にある食材を選んでくださいね</h2>
+      <div class="search">
+        <input id="food-search" type="search" aria-label="食材を検索" placeholder="食材の名前で検索（例：だいこん、かぼちゃ）" autocomplete="off">
+        <button class="btn ghost" id="clear-btn" type="button">選択をリセット</button>
+      </div>
+      <div class="selected-bar" style="margin-top:14px">
+        <strong>選んだ食材</strong>
+        <span class="names" id="selected-names">まだ選ばれていません</span>
+        <p class="sample-note" id="sample-note">いまは例として「大根・豚肉・小松菜」を選んでいます。タップして入れ替えてみてくださいね。</p>
+      </div>
+      <div class="groups" id="food-groups" style="margin-top:16px"></div>
+    </div>
+
+    <div id="food-results"></div>
+  </section>
+
+  <!-- 体の調子から探す -->
+  <section class="panel" id="panel-body" role="tabpanel" aria-labelledby="tab-body" hidden>
+    <div class="card">
+      <span class="label">今日の体はどうですか？</span>
+      <h2>気になることをひとつ選んでくださいね</h2>
+      <div class="conds" id="conds"></div>
+    </div>
+    <div id="body-results"></div>
+  </section>
+
+  <!-- 五色パレット -->
+  <section class="panel" id="panel-color" role="tabpanel" aria-labelledby="tab-color" hidden>
+    <div class="card">
+      <span class="label">五色パレット</span>
+      <h2>色をタップすると、体とのつながりがわかりますよ</h2>
+      <div class="color-btns" id="color-btns"></div>
+    </div>
+    <div id="color-results"></div>
+    <div class="card">
+      <h3>あたためる・冷ますの目安（五性）</h3>
+      <div class="nature-guide">
+        <div><b><span class="tag warm" style="margin-left:0">温・熱</span> あたためる</b><p>生姜、にんにく、長ねぎ、にら、かぼちゃ など。冷えが気になるときの味方です。</p></div>
+        <div><b><span class="tag neutral" style="margin-left:0">平</span> おだやか</b><p>にんじん、キャベツ、小松菜、じゃがいも など。毎日食べても偏りにくい食材です。</p></div>
+        <div><b><span class="tag cool" style="margin-left:0">涼・寒</span> 冷ます</b><p>トマト、きゅうり、なす、大根（生）、セロリ など。火を通したり、生姜やねぎを合わせると安心です。</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  ※薬膳は毎日の食事で体をいたわる考え方です。体調がすぐれないときや治療中のときは、お医者さんに相談してくださいね。
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ===== 知識ベース：五色 ===== */
+  var COLORS = {
+    green:  { name: "緑", organ: "肝", organLabel: "肝（かん）", body: "自律神経・目・巡り",
+              role: "気（エネルギー）をスムーズに巡らせる場所です。ストレスをためこむと巡りが滞って、イライラや目の疲れにつながりやすくなりますよ。",
+              effects: ["気の巡りをよくする", "イライラ・ストレスをやわらげる", "目の疲れのケア"] },
+    red:    { name: "赤", organ: "心", organLabel: "心（しん）", body: "血液の巡り・こころ",
+              role: "全身に血を巡らせ、気持ちの安定も担う場所です。血が足りないと、眠りが浅い・そわそわするなどのサインが出やすくなります。",
+              effects: ["血を補い巡らせる", "気持ちを落ち着かせる", "元気をチャージ"] },
+    yellow: { name: "黄", organ: "脾", organLabel: "脾（ひ）", body: "胃腸・消化吸収",
+              role: "食べたものから元気をつくりだす、体の台所のような場所です。冷たいものや食べすぎで弱りやすいので、あたたかいもので労ってあげましょう。",
+              effects: ["胃腸をあたたかく整える", "消化吸収を助ける", "疲れやすさの回復"] },
+    white:  { name: "白", organ: "肺", organLabel: "肺（はい）", body: "呼吸・のど・肌",
+              role: "呼吸をととのえ、のどや肌のうるおいを守る場所です。乾燥がとても苦手なので、秋冬は特に白い食材でうるおいを足してあげてくださいね。",
+              effects: ["のどや肌を潤す", "乾燥対策", "巡りをあたためる（ねぎ・生姜など）"] },
+    black:  { name: "黒", organ: "腎", organLabel: "腎（じん）", body: "生命力・若々しさ・冷え",
+              role: "生まれ持った元気をたくわえる、体の貯金箱のような場所です。年齢とともに弱りやすく、足腰の冷えやだるさとして表れやすくなります。",
+              effects: ["エイジングケア", "足腰の冷え・だるさのケア", "底力の補給"] }
+  };
+  var COLOR_ORDER = ["green", "red", "yellow", "white", "black"];
+  var NATURE = { warm: "あたためる", neutral: "おだやか", cool: "冷ます" };
+
+  /* ===== 知識ベース：食材 ===== */
+  // color: 五色 / none（色の分類なし）, nature: warm / neutral / cool
+  var FOODS = [
+    { id: "spinach",  name: "ほうれん草", yomi: "ほうれんそう", color: "green", nature: "cool",    effect: "血を補い、巡りをよくします。目の疲れや貧血ぎみのときにも。" },
+    { id: "komatsuna",name: "小松菜",     yomi: "こまつな",     color: "green", nature: "neutral", effect: "イライラをしずめ、巡りをととのえます。アクが少なく使いやすいですよ。" },
+    { id: "celery",   name: "セロリ",     yomi: "せろり",       color: "green", nature: "cool",    effect: "香りで気分をすっきりさせ、のぼせやイライラをクールダウン。" },
+    { id: "shungiku", name: "春菊",       yomi: "しゅんぎく",   color: "green", nature: "neutral", effect: "香りが気の巡りを助け、胃腸の働きもサポートします。" },
+    { id: "pepper",   name: "ピーマン",   yomi: "ぴーまん",     color: "green", nature: "neutral", effect: "気の巡りをよくして、もやもやした気分をすっきりさせます。" },
+    { id: "broccoli", name: "ブロッコリー", yomi: "ぶろっこりー", color: "green", nature: "neutral", effect: "体の底力を補い、疲れにくい体づくりを助けます。" },
+    { id: "cabbage",  name: "キャベツ",   yomi: "きゃべつ",     color: "green", nature: "neutral", effect: "胃腸をいたわり、食べすぎや胃もたれのケアに。" },
+    { id: "cucumber", name: "きゅうり",   yomi: "きゅうり",     color: "green", nature: "cool",    effect: "体の余分な熱と水分を出してくれます。夏のほてりやむくみに。" },
+    { id: "nira",     name: "にら",       yomi: "にら",         color: "green", nature: "warm",    effect: "体をしっかりあたため、冷えやだるさを追い出します。" },
+    { id: "ooba",     name: "大葉",       yomi: "おおば しそ",  color: "green", nature: "warm",    effect: "香りで気を巡らせ、胃腸の働きを助けます。薬味にぴったり。" },
+    { id: "konegi",   name: "小ねぎ",     yomi: "こねぎ ばんのうねぎ", color: "green", nature: "warm", effect: "体をあたため、巡りをよくします。散らすだけで手軽です。" },
+
+    { id: "tomato",   name: "トマト",     yomi: "とまと",       color: "red",   nature: "cool",    effect: "ほてりをしずめ、潤いを補います。火を通すとやさしい味に。" },
+    { id: "carrot",   name: "にんじん",   yomi: "にんじん",     color: "red",   nature: "neutral", effect: "血を補い、目や肌をいたわります。胃腸にもやさしい食材です。" },
+    { id: "paprika",  name: "赤パプリカ", yomi: "あかぱぷりか ぱぷりか", color: "red", nature: "neutral", effect: "血の巡りを助け、元気をチャージします。" },
+    { id: "akajiso",  name: "赤紫蘇（ゆかり）", yomi: "あかじそ ゆかり", color: "red", nature: "warm", effect: "気持ちを落ち着かせ、胃腸の巡りをよくします。" },
+    { id: "salmon",   name: "鮭",         yomi: "さけ しゃけ",  color: "red",   nature: "warm",    effect: "体をあたため、血を補います。冷えや疲れに心強い魚です。" },
+
+    { id: "pumpkin",  name: "かぼちゃ",   yomi: "かぼちゃ",     color: "yellow", nature: "warm",   effect: "胃腸をあたためて元気を補います。疲れやすいときに。" },
+    { id: "corn",     name: "とうもろこし", yomi: "とうもろこし こーん", color: "yellow", nature: "neutral", effect: "胃腸を元気にし、むくみのケアにも役立ちます。" },
+    { id: "satsuma",  name: "さつまいも", yomi: "さつまいも",   color: "yellow", nature: "neutral", effect: "胃腸を整え、元気を補います。お通じのサポートにも。" },
+    { id: "soy",      name: "大豆",       yomi: "だいず",       color: "yellow", nature: "neutral", effect: "胃腸を助け、体の元気の土台をつくります。" },
+    { id: "ginger",   name: "生姜",       yomi: "しょうが",     color: "yellow", nature: "warm",   effect: "体を内側からあたため、胃腸を元気にします。冷え対策の主役。" },
+    { id: "potato",   name: "じゃがいも", yomi: "じゃがいも",   color: "yellow", nature: "neutral", effect: "胃腸を整えて元気を補います。おだやかで毎日使いやすいですよ。" },
+    { id: "egg",      name: "卵",         yomi: "たまご",       color: "yellow", nature: "neutral", effect: "血と潤いを補い、気持ちを落ち着かせます。" },
+
+    { id: "daikon",   name: "大根",       yomi: "だいこん",     color: "white", nature: "cool",    effect: "のどを潤し、消化を助けます。煮るとおだやかな性質に。" },
+    { id: "renkon",   name: "れんこん",   yomi: "れんこん",     color: "white", nature: "neutral", effect: "のどや肺を潤します。加熱すると胃腸にもやさしくなりますよ。" },
+    { id: "negi",     name: "長ねぎ",     yomi: "ながねぎ ねぎ", color: "white", nature: "warm",   effect: "体をあたため、巡りをよくします。冷えのひきはじめに。" },
+    { id: "hakusai",  name: "白菜",       yomi: "はくさい",     color: "white", nature: "neutral", effect: "のどの乾燥をやわらげ、胃腸をととのえます。" },
+    { id: "onion",    name: "玉ねぎ",     yomi: "たまねぎ",     color: "white", nature: "warm",    effect: "体をあたため、血の巡りをよくします。" },
+    { id: "nagaimo",  name: "長芋",       yomi: "ながいも やまいも", color: "white", nature: "neutral", effect: "胃腸と肺を潤し、元気を補います。疲れやすいときに。" },
+    { id: "kabu",     name: "かぶ",       yomi: "かぶ",         color: "white", nature: "neutral", effect: "胃腸をあたためて消化を助けます。葉は緑の仲間です。" },
+    { id: "moyashi",  name: "もやし",     yomi: "もやし",       color: "white", nature: "cool",    effect: "体の余分な熱や水分を出します。生姜と炒めると安心です。" },
+    { id: "garlic",   name: "にんにく",   yomi: "にんにく",     color: "white", nature: "warm",    effect: "体をしっかりあたため、元気を出させてくれます。" },
+    { id: "tofu",     name: "豆腐",       yomi: "とうふ",       color: "white", nature: "cool",    effect: "体の熱をしずめ、潤いを補います。あたたかい料理で。" },
+
+    { id: "kurogoma", name: "黒ごま",     yomi: "くろごま ごま", color: "black", nature: "neutral", effect: "髪や肌を若々しく保ち、潤いを補います。" },
+    { id: "kikurage", name: "きくらげ",   yomi: "きくらげ",     color: "black", nature: "neutral", effect: "血と潤いを補い、エイジングケアに役立ちます。" },
+    { id: "gobo",     name: "ごぼう",     yomi: "ごぼう",       color: "black", nature: "cool",    effect: "お腹の巡りをよくし、余分なものを出してくれます。" },
+    { id: "hijiki",   name: "ひじき",     yomi: "ひじき",       color: "black", nature: "cool",    effect: "血を補い、体の底力を支えます。" },
+    { id: "kuromame", name: "黒豆",       yomi: "くろまめ",     color: "black", nature: "neutral", effect: "足腰をいたわり、むくみや冷えのケアに。" },
+    { id: "shiitake", name: "椎茸",       yomi: "しいたけ",     color: "black", nature: "neutral", effect: "元気を補い、胃腸の働きを助けます。干し椎茸もおすすめです。" },
+    { id: "nasu",     name: "なす",       yomi: "なす なすび",  color: "black", nature: "cool",    effect: "体の熱をしずめ、血の巡りを助けます。紫は黒の仲間です。" },
+
+    { id: "pork",     name: "豚肉",       yomi: "ぶたにく",     color: "none",  nature: "neutral", effect: "潤いを補い、疲れた体に元気を足してくれます。" },
+    { id: "chicken",  name: "鶏肉",       yomi: "とりにく",     color: "none",  nature: "warm",    effect: "胃腸をあたため、元気を補います。" },
+    { id: "beef",     name: "牛肉",       yomi: "ぎゅうにく",   color: "none",  nature: "neutral", effect: "元気と血を補い、足腰を丈夫にします。" },
+    { id: "saba",     name: "さば",       yomi: "さば",         color: "none",  nature: "neutral", effect: "血の巡りをよくし、胃腸を元気にします。" }
+  ];
+  var FOOD = {};
+  FOODS.forEach(function (f) { FOOD[f.id] = f; });
+
+  /* ===== おうち薬膳メニュー ===== */
+  // need: 主役の食材（1つ以上合えば候補） / plus: あると更によい食材
+  var RECIPES = [
+    { name: "豚肉と大根のほっこり煮", need: ["daikon", "pork"], plus: ["ginger", "negi"], how: "大根は厚めのいちょう切りに。豚肉と一緒にだし・しょうゆ・みりんでコトコト煮るだけ。煮ることで大根の冷やす性質がおだやかになりますよ。" },
+    { name: "小松菜と卵のふんわり炒め", need: ["komatsuna", "egg"], plus: ["ginger", "pork"], how: "ごま油で小松菜を炒め、溶き卵を回し入れてふんわり。塩と少しのしょうゆで味をととのえます。" },
+    { name: "鶏肉とかぼちゃのやさしい煮もの", need: ["pumpkin", "chicken"], plus: ["onion", "ginger"], how: "ひと口大に切ったかぼちゃと鶏肉を、だし・しょうゆ・みりんで煮るだけ。胃腸がほっとあたたまります。" },
+    { name: "トマトと卵の生姜炒め", need: ["tomato", "egg"], plus: ["ginger", "negi"], how: "ごま油でおろし生姜を香らせ、くし切りのトマトと卵をさっと炒めます。火を通すことでトマトが体を冷やしにくくなりますよ。" },
+    { name: "れんこんとごぼうの黒ごまきんぴら", need: ["renkon", "gobo"], plus: ["kurogoma", "carrot"], how: "細切りにしてごま油で炒め、しょうゆ・みりんで甘じょっぱく。仕上げに黒ごまをたっぷりどうぞ。" },
+    { name: "白菜と豚肉の重ね蒸し", need: ["hakusai", "pork"], plus: ["ginger", "shiitake"], how: "白菜と豚肉を交互に重ねて鍋に入れ、酒をふってふたをして蒸し煮に。ポン酢と生姜でさっぱりいただけます。" },
+    { name: "鮭とほうれん草のバターしょうゆ", need: ["salmon", "spinach"], plus: ["onion", "shiitake"], how: "フライパンで鮭を焼き、ほうれん草を加えてバターとしょうゆでさっと仕上げます。血を補う組み合わせですよ。" },
+    { name: "長芋のふわふわ焼き", need: ["nagaimo"], plus: ["egg", "konegi", "negi"], how: "すりおろした長芋に卵を混ぜ、フライパンで丸く焼くだけ。小ねぎとしょうゆを添えて。" },
+    { name: "かぶと鶏肉のとろとろスープ", need: ["kabu", "chicken"], plus: ["ginger", "negi"], how: "かぶと鶏肉を鶏がらスープで煮て、水溶き片栗粉でとろみを。とろみがあると冷めにくく、体がぽかぽかしますよ。" },
+    { name: "ひじきとにんじんの煮もの", need: ["hijiki", "carrot"], plus: ["soy", "shiitake"], how: "戻したひじきとにんじんを油で炒め、だし・しょうゆ・砂糖で煮ます。作りおきにも便利です。" },
+    { name: "なすと豚肉の生姜焼き", need: ["nasu", "pork"], plus: ["ginger", "onion"], how: "なすと豚肉を焼いて、しょうゆ・みりん・おろし生姜をからめます。生姜がなすの冷やす力をやわらげてくれます。" },
+    { name: "春菊と豆腐のごま和え", need: ["shungiku", "tofu"], plus: ["kurogoma"], how: "さっとゆでた春菊と水切りした豆腐を、すりごま・しょうゆ・砂糖で和えるだけ。黒ごまにすると五色がそろいやすいですよ。" },
+    { name: "さつまいもと玉ねぎのお味噌汁", need: ["satsuma", "onion"], plus: ["negi", "carrot"], how: "さつまいもと玉ねぎをだしで煮て、味噌をとくだけ。自然な甘みで胃腸がほっとします。" },
+    { name: "きくらげと卵の炒めもの", need: ["kikurage", "egg"], plus: ["pork", "negi"], how: "戻したきくらげと豚肉をごま油で炒め、卵を加えて塩・こしょうで。コリコリ食感が楽しい一品です。" },
+    { name: "ブロッコリーのにんにく蒸し", need: ["broccoli"], plus: ["garlic", "chicken"], how: "フライパンにブロッコリー、薄切りにんにく、ごま油、水少々を入れてふたをし、蒸し焼きに。塩でシンプルに。" },
+    { name: "セロリとにんじんのきんぴら", need: ["celery", "carrot"], plus: ["ginger"], how: "細切りにしてごま油で炒め、しょうゆ・みりんで。炒めることでセロリの冷やす性質がやさしくなりますよ。" },
+    { name: "にら玉スープ", need: ["nira"], plus: ["egg", "tofu", "ginger"], how: "鶏がらスープににらを入れ、溶き卵を回し入れるだけ。冷えた日にぴったりのあたたまるスープです。" },
+    { name: "鶏肉と長ねぎの照り焼き", need: ["chicken", "negi"], plus: ["ginger", "shiitake"], how: "鶏肉と長ねぎを焼き、しょうゆ・みりん・砂糖をからめて照りよく仕上げます。" },
+    { name: "キャベツと豚肉の味噌炒め", need: ["cabbage", "pork"], plus: ["pepper", "garlic"], how: "ざく切りキャベツと豚肉を炒め、味噌・みりん・しょうゆで味つけ。胃腸をいたわる組み合わせです。" },
+    { name: "じゃがいもとにんじんのみそバター煮", need: ["potato", "carrot"], plus: ["onion", "pork"], how: "ひと口大に切ってだしで煮て、味噌とバター少々で仕上げます。ほっとする甘さですよ。" },
+    { name: "椎茸と白菜のとろみ煮", need: ["shiitake", "hakusai"], plus: ["ginger", "pork"], how: "椎茸と白菜をだしで煮て、しょうゆで味をつけ、片栗粉でとろみを。のどにもやさしい一品です。" },
+    { name: "きゅうりと豚肉の生姜炒め", need: ["cucumber"], plus: ["pork", "ginger"], how: "きゅうりは炒めてもおいしいんですよ。豚肉と生姜で炒めて塩・こしょうで。体を冷やしすぎずに食べられます。" },
+    { name: "大豆とひじきの炊き込みごはん", need: ["soy", "hijiki"], plus: ["carrot", "shiitake"], how: "研いだお米に水煮大豆・戻したひじき・にんじんを入れ、しょうゆとみりんで炊くだけ。" },
+    { name: "ピーマンと豚肉のさっと炒め", need: ["pepper", "pork"], plus: ["paprika", "garlic"], how: "細切りにしてごま油で炒め、オイスターソースとしょうゆで。気の巡りをよくする組み合わせです。" },
+    { name: "とうもろこしと玉ねぎのコーンスープ", need: ["corn", "onion"], plus: ["potato"], how: "玉ねぎを炒めてとうもろこしと牛乳（または豆乳）で煮て、塩で味をととのえます。" },
+    { name: "赤パプリカと鶏肉の甘酢炒め", need: ["paprika", "chicken"], plus: ["onion", "pepper"], how: "鶏肉とパプリカを炒めて、酢・しょうゆ・砂糖をからめます。彩りで元気が出ますよ。" },
+    { name: "もやしとにらの生姜炒め", need: ["moyashi", "nira"], plus: ["ginger", "pork"], how: "強火でさっと炒めて、生姜と塩・しょうゆで。もやしの冷やす性質をにらと生姜がカバーします。" },
+    { name: "さばと大根のみそ煮", need: ["saba", "daikon"], plus: ["ginger", "negi"], how: "さばと大根を生姜と一緒に味噌・みりんで煮込みます。体のすみずみまであたたまりますよ。" },
+    { name: "牛肉とごぼうのしぐれ煮", need: ["beef", "gobo"], plus: ["ginger"], how: "ささがきごぼうと牛肉を、しょうゆ・みりん・砂糖・千切り生姜で煮つめます。" },
+    { name: "鮭とかぶのクリーム煮", need: ["salmon", "kabu"], plus: ["onion", "broccoli"], how: "鮭とかぶを炒めて、牛乳と少しの小麦粉でとろりと煮ます。胃腸にやさしい洋風の一品です。" },
+    { name: "れんこんのはさみ焼き", need: ["renkon"], plus: ["pork", "chicken", "ginger"], how: "薄切りれんこんでひき肉をはさみ、両面をこんがり焼いて甘じょっぱいたれをからめます。" },
+    { name: "黒豆ごはん", need: ["kuromame"], plus: [], how: "研いだお米に黒豆（蒸し黒豆でもOK）と塩少々を入れて炊くだけ。足腰をいたわるごはんです。" },
+    { name: "トマトとなすの生姜スープ", need: ["tomato", "nasu"], plus: ["ginger", "onion"], how: "トマト・なす・玉ねぎをスープで煮て、おろし生姜をたっぷり。冷やす野菜もあたたかいスープなら安心です。" }
+  ];
+
+  /* ===== 色ごとのちょい足し ===== */
+  var TOPPINGS = {
+    green:  "小ねぎや大葉を散らすと、緑が加わって気の巡りがよくなりますよ。",
+    red:    "ゆかり（赤紫蘇のふりかけ）や、にんじんの千切りを少し足すと、赤の元気がプラスされます。",
+    yellow: "おろし生姜をひとさじ。黄色の仲間で、胃腸をあたためてくれますよ。",
+    white:  "白ごまや長ねぎの小口切りを足すと、白の潤いがアップしますよ。",
+    black:  "黒ごまをひと振りするだけで、黒の底力がプラスされますよ。"
+  };
+
+  /* ===== 体の調子 ===== */
+  var CONDITIONS = [
+    { id: "cold", title: "冷えが気になる", colors: ["black", "yellow"],
+      intro: "手足やお腹が冷えるときは、体の底力をたくわえる「黒」と、胃腸をあたためる「黄」を中心にしてみてくださいね。",
+      foods: ["ginger", "negi", "pumpkin", "nira", "gobo", "kuromame", "chicken"],
+      tips: ["生姜は加熱するとあたためる力がぐっと続きやすくなります。スープや炒めものにどうぞ。", "冷やす野菜（トマト・きゅうりなど）は、生より煮る・炒めるで食べてくださいね。", "長ねぎ・にら・にんにくなど香りの強い野菜は、体をぽかぽかにしてくれます。", "黒ごまや黒豆を毎日少しずつ。足腰の冷え対策になりますよ。"],
+      menu: "鶏肉と長ねぎ、生姜たっぷりのにら玉スープ" },
+    { id: "stomach", title: "胃腸が重い・もたれる", colors: ["yellow", "green"],
+      intro: "胃腸がお疲れのときは、「黄」の食材でやさしく労わり、「緑」の香りで巡りを助けてあげましょう。",
+      foods: ["cabbage", "pumpkin", "potato", "kabu", "daikon", "shungiku", "ooba"],
+      tips: ["やわらかく煮る・とろみをつけるなど、消化しやすい調理法がおすすめです。", "大根おろしは消化を助けてくれます。冷えが気になる日は、加熱した大根にしてくださいね。", "揚げものや冷たい飲みものは少しお休み。常温かあたたかいものを選びましょう。", "大葉や春菊などの香りの野菜は、胃腸の動きをそっと後押ししてくれます。"],
+      menu: "キャベツとかぶのやわらかスープ（生姜少々）" },
+    { id: "stress", title: "目の疲れ・イライラ", colors: ["green", "red"],
+      intro: "目の疲れやイライラは、気の巡りが滞っているサインかもしれません。「緑」で巡らせて、「赤」で血を補いましょう。",
+      foods: ["spinach", "komatsuna", "celery", "shungiku", "pepper", "carrot", "tomato"],
+      tips: ["セロリや春菊など香りのある野菜は、気分をすっきりさせてくれますよ。", "目の疲れには、ほうれん草やにんじんで血を補うのがおすすめです。", "酸味（お酢やレモン）も巡りを助けます。和えものにちょっと足してみてくださいね。", "画面を見続けたあとは、あたたかいお茶で一息つくのも大切です。"],
+      menu: "小松菜とにんじんのごま和え・セロリのきんぴら" },
+    { id: "dry", title: "乾燥・のどの違和感", colors: ["white", "black"],
+      intro: "のどや肌の乾燥には、潤いを守る「白」と、潤いの元をたくわえる「黒」を合わせると心強いですよ。",
+      foods: ["daikon", "renkon", "hakusai", "nagaimo", "tofu", "kurogoma", "kikurage"],
+      tips: ["れんこんはすりおろしてスープに入れると、のどにやさしいとろみになります。", "大根はコトコト煮ると体を冷やしにくく、潤いもしっかり補えます。", "白ごま・黒ごまは、仕上げに振るだけで潤いアップ。", "とろみのあるスープや煮ものは、のどを通りやすく乾燥ケアにぴったりです。"],
+      menu: "れんこんのすりおろしスープ・白菜と豆腐のとろみ煮" },
+    { id: "tired", title: "元気不足・疲れやすい", colors: ["yellow", "black"],
+      intro: "なんだかだるい日は、元気をつくりだす「黄」と、底力をたくわえる「黒」で、じっくりチャージしましょう。",
+      foods: ["pumpkin", "satsuma", "nagaimo", "soy", "shiitake", "chicken", "kuromame"],
+      tips: ["いも類やかぼちゃは、蒸す・煮るでほっくりと。胃腸にやさしく元気を補います。", "長芋はすりおろしても加熱してもOK。疲れやすいときの心強い味方です。", "鶏肉や卵などのたんぱく質も一緒にとると、元気が長もちしますよ。", "がんばりすぎた日は、具だくさんのお味噌汁一杯だけでも十分です。"],
+      menu: "鶏肉とかぼちゃの煮もの・長芋のふわふわ焼き" },
+    { id: "sleep", title: "眠りが浅い・そわそわする", colors: ["red", "green"],
+      intro: "気持ちが落ち着かないときは、血を補って心をしずめる「赤」と、巡りをととのえる「緑」がおすすめです。",
+      foods: ["carrot", "tomato", "akajiso", "egg", "spinach", "celery", "kurogoma"],
+      tips: ["にんじんやほうれん草で血を補うと、気持ちが安定しやすくなりますよ。", "卵は血と潤いを補い、心を落ち着かせる食材です。", "夜ごはんは早めに、消化のよいものを。寝る前の食べすぎは控えめに。", "赤紫蘇のゆかりや大葉の香りで、ふっと気持ちをゆるめてみてくださいね。"],
+      menu: "トマトと卵の生姜炒め・にんじんのゆかり和え" },
+    { id: "swell", title: "むくみ・体が重だるい", colors: ["yellow", "black"],
+      intro: "体に余分な水分がたまると、重だるさにつながります。「黄」で胃腸を元気にし、「黒」で水分の巡りを助けましょう。",
+      foods: ["corn", "soy", "kuromame", "gobo", "cucumber", "moyashi", "ginger"],
+      tips: ["とうもろこしや大豆、黒豆は余分な水分を出すのを助けてくれます。", "きゅうりやもやしは、炒めたりスープにしたりして食べてくださいね。", "塩分は控えめに。生姜やねぎの香りで満足感を出すのがコツです。", "冷たい飲みものを常温やあたたかいお茶に替えるだけでも違いますよ。"],
+      menu: "とうもろこしのスープ・もやしとにらの生姜炒め" }
+  ];
+
+  /* ===== util ===== */
+  function $(sel) { return document.querySelector(sel); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function natureTag(n) { return '<span class="tag ' + n + '">' + NATURE[n] + "</span>"; }
+  function dot(c) { return '<span class="dot ' + c + '" aria-hidden="true"></span>'; }
+  function toHira(s) { return s.replace(/[ァ-ヶ]/g, function (ch) { return String.fromCharCode(ch.charCodeAt(0) - 0x60); }); }
+  function store(key, val) {
+    try { if (val === undefined) return localStorage.getItem(key); localStorage.setItem(key, val); } catch (e) { return null; }
+    return null;
+  }
+
+  /* ===== タブ ===== */
+  var tabs = ["food", "body", "color"];
+  function showTab(name) {
+    tabs.forEach(function (t) {
+      var on = t === name;
+      $("#tab-" + t).setAttribute("aria-selected", on ? "true" : "false");
+      $("#tab-" + t).tabIndex = on ? 0 : -1;
+      $("#panel-" + t).hidden = !on;
+    });
+    store("ouchi-yakuzen-tab", name);
+  }
+  tabs.forEach(function (t, i) {
+    var el = $("#tab-" + t);
+    el.addEventListener("click", function () { showTab(t); });
+    el.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        var next = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+        showTab(next); $("#tab-" + next).focus();
+      }
+    });
+  });
+
+  /* ===== 1. 食材から探す ===== */
+  var selected = ["daikon", "pork", "komatsuna"];
+  var isSample = true;
+  var GROUPS = COLOR_ORDER.map(function (c) {
+    return { key: c, label: COLORS[c].name + "の食材（" + COLORS[c].organ + "）" };
+  }).concat([{ key: "none", label: "肉・魚など" }]);
+
+  function renderChips() {
+    var q = toHira($("#food-search").value.trim().toLowerCase());
+    var html = "";
+    var hit = 0;
+    GROUPS.forEach(function (g) {
+      var items = FOODS.filter(function (f) {
+        if (f.color !== g.key) return false;
+        if (!q) return true;
+        return toHira(f.name).indexOf(q) >= 0 || f.yomi.indexOf(q) >= 0;
+      });
+      if (!items.length) return;
+      hit += items.length;
+      html += '<div class="group"><h4>' + dot(g.key) + esc(g.label) + '</h4><div class="chips">';
+      items.forEach(function (f) {
+        var on = selected.indexOf(f.id) >= 0;
+        html += '<button type="button" class="chip" data-id="' + f.id + '" aria-pressed="' + on + '">' + dot(f.color) + esc(f.name) + "</button>";
+      });
+      html += "</div></div>";
+    });
+    if (!hit) html = '<p class="empty">「' + esc($("#food-search").value) + '」は見つかりませんでした。ひらがなや別の呼び方でも探してみてくださいね。</p>';
+    $("#food-groups").innerHTML = html;
+  }
+
+  function toggleFood(id) {
+    if (isSample) { isSample = false; }
+    var i = selected.indexOf(id);
+    if (i >= 0) selected.splice(i, 1); else selected.push(id);
+    updateFood();
+  }
+
+  $("#food-groups").addEventListener("click", function (e) {
+    var b = e.target.closest(".chip");
+    if (b) toggleFood(b.getAttribute("data-id"));
+  });
+  $("#food-search").addEventListener("input", renderChips);
+  $("#food-search").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      var first = $("#food-groups .chip");
+      if (first) { toggleFood(first.getAttribute("data-id")); $("#food-search").value = ""; renderChips(); }
+    }
+  });
+  $("#clear-btn").addEventListener("click", function () {
+    selected = []; isSample = false; $("#food-search").value = ""; updateFood();
+  });
+
+  function pickRecipes(ids) {
+    var scored = RECIPES.map(function (r) {
+      var needHit = r.need.filter(function (x) { return ids.indexOf(x) >= 0; }).length;
+      var plusHit = r.plus.filter(function (x) { return ids.indexOf(x) >= 0; }).length;
+      return { r: r, needHit: needHit, score: needHit * 3 + plusHit + (needHit === r.need.length ? 2 : 0) };
+    }).filter(function (s) { return s.needHit > 0; });
+    scored.sort(function (a, b) { return b.score - a.score; });
+    var out = [];
+    var covered = {};
+    scored.forEach(function (s) {
+      if (out.length >= 2) return;
+      // 2品目は、1品目で使っていない食材を含むものを優先
+      if (out.length === 1) {
+        var fresh = s.r.need.concat(s.r.plus).some(function (x) { return ids.indexOf(x) >= 0 && !covered[x]; });
+        if (!fresh && scored.length > 2) return;
+      }
+      out.push(s.r);
+      s.r.need.concat(s.r.plus).forEach(function (x) { covered[x] = true; });
+    });
+    return out;
+  }
+
+  function genericSoup(ids) {
+    var names = ids.slice(0, 3).map(function (id) { return FOOD[id].name; });
+    var hasCool = ids.some(function (id) { return FOOD[id].nature === "cool"; });
+    return {
+      name: names.join("と") + "の具だくさんお味噌汁",
+      how: "食べやすく切って、だしで煮て味噌をとくだけ。" + (hasCool ? "冷やす性質の食材も、火を通してあたたかい汁ものにすればやさしくいただけますよ。" : "あたたかい汁ものは胃腸にやさしく、どんな食材も受け止めてくれますよ。") + "仕上げにおろし生姜をのせるのもおすすめです。",
+      need: ids.slice(0, 3), plus: []
+    };
+  }
+
+  function updateFood() {
+    renderChips();
+    $("#sample-note").hidden = !isSample;
+    $("#selected-names").textContent = selected.length ? selected.map(function (id) { return FOOD[id].name; }).join("・") : "まだ選ばれていません";
+
+    var box = $("#food-results");
+    if (!selected.length) {
+      box.innerHTML = '<div class="card empty">上の食材をタップすると、ここに色のバランスやおすすめメニューが出てきますよ。</div>';
+      return;
+    }
+    var foods = selected.map(function (id) { return FOOD[id]; });
+    var present = {};
+    foods.forEach(function (f) { if (f.color !== "none") present[f.color] = true; });
+    var colorCount = Object.keys(present).length;
+    var missing = COLOR_ORDER.filter(function (c) { return !present[c]; });
+
+    // 温冷
+    var heat = 0;
+    foods.forEach(function (f) { heat += f.nature === "warm" ? 1 : f.nature === "cool" ? -1 : 0; });
+    var avg = heat / foods.length; // -1〜1
+    var pinLeft = 50 + avg * 45;
+    var heatMsg;
+    if (avg <= -0.34) heatMsg = "冷ます食材が多めです。火を通したり、生姜・ねぎ・ごま油を合わせると、体を冷やしすぎずにいただけますよ。";
+    else if (avg < 0) heatMsg = "少しだけ冷ます寄りです。加熱料理にするか、生姜をちょっと足すとちょうどよくなりますよ。";
+    else if (avg >= 0.5) heatMsg = "あたためる食材がしっかりそろっています。冷えが気になる日にぴったりの組み合わせですよ。";
+    else heatMsg = "あたためる・冷ますのバランスがおだやかで、毎日のごはんにちょうどいい組み合わせです。";
+
+    var balanceMsg;
+    if (colorCount === 0) balanceMsg = "お肉やお魚が中心ですね。野菜をひとつ足すと、色のバランスがぐっとよくなりますよ。";
+    else if (colorCount === 1) balanceMsg = COLORS[Object.keys(present)[0]].name + "の食材が中心です。ほかの色をひとつ足すと、体のいろいろな場所をまんべんなく助けられますよ。";
+    else if (colorCount <= 3) balanceMsg = colorCount + "色がそろっていて、いいバランスです。" + missing.slice(0, 2).map(function (c) { return COLORS[c].name; }).join("や") + "を少し足すと、さらに整いますよ。";
+    else if (colorCount === 4) balanceMsg = "4色もそろっていて、とてもいいバランスです！あと" + COLORS[missing[0]].name + "で五色がそろいますよ。";
+    else balanceMsg = "五色すべてそろっています。体のすみずみまで行き渡る、理想的な組み合わせですよ。";
+
+    var palette = COLOR_ORDER.map(function (c) {
+      return '<div class="pal ' + c + (present[c] ? " on" : "") + '"><span class="big"></span>' + COLORS[c].name + "</div>";
+    }).join("");
+
+    var list = foods.map(function (f) {
+      var where = f.color === "none" ? "肉・魚" : COLORS[f.color].name + "・" + COLORS[f.color].organ;
+      return "<li>" + dot(f.color) + "<div><b>" + esc(f.name) + "</b>" + natureTag(f.nature) +
+        '<span class="tag neutral" style="color:var(--ink-soft)">' + esc(where) + "</span></div><p>" + esc(f.effect) + "</p></li>";
+    }).join("");
+
+    var recipes = pickRecipes(selected);
+    if (recipes.length < 2) recipes.push(genericSoup(selected));
+    var menuHtml = recipes.slice(0, 2).map(function (r) {
+      var uses = r.need.concat(r.plus).filter(function (x) { return selected.indexOf(x) >= 0; }).map(function (x) { return FOOD[x].name; });
+      var extra = r.need.concat(r.plus).filter(function (x) { return selected.indexOf(x) < 0; }).map(function (x) { return FOOD[x].name; });
+      return '<div class="menu-item"><h4>' + esc(r.name) + "</h4><p>" + esc(r.how) + '</p><p class="uses">使う食材：' + esc(uses.join("・")) +
+        (extra.length ? "　／　あれば：" + esc(extra.join("・")) : "") + "</p></div>";
+    }).join("");
+
+    var tips = [];
+    if (avg < 0) tips.push({ c: "yellow", t: "冷ます食材が入っているので、おろし生姜やごま油をひとたらし。体を冷やしすぎずにいただけますよ。" });
+    missing.forEach(function (c) { if (tips.length < 3) tips.push({ c: c, t: TOPPINGS[c] }); });
+    if (!tips.length) tips.push({ c: "white", t: "五色そろっていますね。仕上げに白ごまや黒ごまを振ると、香ばしさと潤いがさらにアップしますよ。" });
+    var tipsHtml = tips.map(function (x) { return "<li>" + dot(x.c) + "<span>" + esc(x.t) + "</span></li>"; }).join("");
+
+    box.innerHTML =
+      '<div class="results fade-in">' +
+        '<div class="card"><span class="label">色の組み合わせ</span><h3>' + (colorCount ? colorCount + "色そろっています" : "色の食材はまだありません") + "</h3>" +
+          '<div class="palette-row">' + palette + "</div><p style=\"margin:0\">" + esc(balanceMsg) + "</p></div>" +
+        '<div class="card"><span class="label">あたためる・冷ますのバランス</span><h3>薬膳的なバランス</h3>' +
+          '<div class="meter" role="img" aria-label="温冷バランス"><div class="meter-track"><span class="meter-pin" style="left:' + pinLeft.toFixed(1) + '%"></span></div>' +
+          '<div class="meter-scale"><span>冷ます</span><span>おだやか</span><span>あたためる</span></div></div>' +
+          '<p style="margin:12px 0 0">' + esc(heatMsg) + "</p></div>" +
+        '<div class="card wide"><span class="label">食材ごとの効能</span><h3>それぞれの食材のはたらき</h3><ul class="food-list">' + list + "</ul></div>" +
+        '<div class="card"><span class="label">おうち薬膳メニュー</span><h3>今日はこれを作ってみませんか？</h3><div class="menu">' + menuHtml + "</div></div>" +
+        '<div class="card"><span class="label">ちょい足しワンポイント</span><h3>身近な薬味でもっとよくなります</h3><ul class="tips">' + tipsHtml + "</ul></div>" +
+      "</div>";
+  }
+
+  /* ===== 2. 体の調子から探す ===== */
+  var currentCond = "cold";
+  function renderConds() {
+    $("#conds").innerHTML = CONDITIONS.map(function (c) {
+      return '<button type="button" class="cond" data-id="' + c.id + '" aria-pressed="' + (c.id === currentCond) + '">' +
+        '<span class="dots">' + c.colors.map(dot).join("") + '</span><span class="t">' + esc(c.title) + "</span></button>";
+    }).join("");
+  }
+  function renderBody() {
+    renderConds();
+    var c = CONDITIONS.filter(function (x) { return x.id === currentCond; })[0];
+    var colorText = c.colors.map(function (k) {
+      return '<span style="display:inline-flex;align-items:center;gap:6px;margin-right:14px;font-weight:700">' + dot(k) + COLORS[k].name + "（" + COLORS[k].body + "）</span>";
+    }).join("");
+    var vegs = c.foods.map(function (id) {
+      var f = FOOD[id];
+      return '<button type="button" class="veg-card" data-food="' + id + '"><span class="name">' + dot(f.color) + esc(f.name) + natureTag(f.nature) + "</span><p>" + esc(f.effect) +
+        '</p><span class="go">＋ この食材でメニューを探す</span></button>';
+    }).join("");
+    $("#body-results").innerHTML =
+      '<div class="panel fade-in">' +
+        '<div class="card"><span class="label">おすすめの色</span><h2>' + esc(c.title) + "</h2>" +
+          '<p style="margin:0 0 10px">' + colorText + "</p><p style=\"margin:0\">" + esc(c.intro) + "</p></div>" +
+        '<div class="card"><span class="label">今食べたい野菜</span><h3>冷蔵庫にあるものから選んでみてくださいね</h3><div class="veg-grid">' + vegs + "</div></div>" +
+        '<div class="card"><span class="label">調理法・温冷の工夫</span><h3>食べ方のコツ</h3><ol class="steps">' +
+          c.tips.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") +
+          '</ol><p style="margin:14px 0 0;padding:12px 14px;background:var(--paper-2);border-radius:var(--r-md)"><b>今夜のひと品：</b>' + esc(c.menu) + "</p></div>" +
+      "</div>";
+  }
+  $("#conds").addEventListener("click", function (e) {
+    var b = e.target.closest(".cond");
+    if (b) { currentCond = b.getAttribute("data-id"); renderBody(); }
+  });
+
+  /* ===== 3. 五色パレット ===== */
+  var currentColor = "white";
+  function renderColorBtns() {
+    $("#color-btns").innerHTML = COLOR_ORDER.map(function (k) {
+      return '<button type="button" class="color-btn" data-color="' + k + '" aria-pressed="' + (k === currentColor) + '">' +
+        '<span class="swatch bg-' + k + '"' + (k === "white" ? ' style="border-color:var(--c-white-edge)"' : "") + "></span>" +
+        COLORS[k].name + "<small>" + COLORS[k].organ + "</small></button>";
+    }).join("");
+  }
+  function renderColor() {
+    renderColorBtns();
+    var c = COLORS[currentColor];
+    var items = FOODS.filter(function (f) { return f.color === currentColor; });
+    var vegs = items.map(function (f) {
+      return '<button type="button" class="veg-card" data-food="' + f.id + '"><span class="name">' + esc(f.name) + natureTag(f.nature) + "</span><p>" + esc(f.effect) +
+        '</p><span class="go">＋ この食材でメニューを探す</span></button>';
+    }).join("");
+    $("#color-results").innerHTML =
+      '<div class="panel fade-in">' +
+        '<div class="card"><div class="organ-head"><div class="organ-mark bg-' + currentColor + " " + currentColor + '">' + c.organ + "</div>" +
+          "<div><span class=\"label\">" + c.name + "の食材が助けるところ</span><h2>" + c.organLabel + "：" + c.body + "</h2></div></div>" +
+          '<p style="margin:14px 0 0">' + esc(c.role) + '</p><ul class="effects">' + c.effects.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></div>" +
+        '<div class="card"><span class="label">代表的な食材</span><h3>' + c.name + "の食材図鑑</h3><div class=\"veg-grid\">" + vegs + "</div></div>" +
+      "</div>";
+  }
+  $("#color-btns").addEventListener("click", function (e) {
+    var b = e.target.closest(".color-btn");
+    if (b) { currentColor = b.getAttribute("data-color"); renderColor(); }
+  });
+
+  // 図鑑・体の調子 → 食材タブへ
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".veg-card[data-food]");
+    if (!b) return;
+    var id = b.getAttribute("data-food");
+    if (isSample) { selected = []; isSample = false; }
+    if (selected.indexOf(id) < 0) selected.push(id);
+    updateFood();
+    showTab("food");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  /* ===== 起動 ===== */
+  updateFood();
+  renderBody();
+  renderColor();
+  var saved = store("ouchi-yakuzen-tab");
+  showTab(tabs.indexOf(saved) >= 0 ? saved : "food");
+})();
+</script>
+</body>
+</html>
